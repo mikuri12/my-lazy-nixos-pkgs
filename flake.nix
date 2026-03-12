@@ -19,6 +19,7 @@
         inherit system;
         config.allowUnfreePredicate = pkg: builtins.elem (pkg.pname or "") [
           "spotiflac"
+          "easytether"
         ];
       }));
 
