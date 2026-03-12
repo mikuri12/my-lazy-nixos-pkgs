@@ -21,6 +21,9 @@
           "spotiflac"
           "easytether"
         ];
+         permittedInsecurePackages = [
+            "openssl-1.1.1w"
+        ];
       }));
 
     pkgsDir = builtins.readDir ./pkgs;
