@@ -12,19 +12,21 @@
     systems,
     ...
   }: let
-    eachSystem = fn:
-      nixpkgs.lib.genAttrs
-      (import systems)
-      (system: fn (import nixpkgs {
-        inherit system;
-        config.allowUnfreePredicate = pkg: builtins.elem (pkg.pname or "") [
+  eachSystem = fn:
+    nixpkgs.lib.genAttrs
+    (import systems)
+    (system: fn (import nixpkgs {
+      inherit system;
+      config = {
+        allowUnfreePredicate = pkg: builtins.elem (pkg.pname or "") [
           "spotiflac"
           "easytether"
         ];
-         permittedInsecurePackages = [
-            "openssl-1.1.1w"
+        permittedInsecurePackages = [
+          "openssl-1.1.1w"
         ];
-      }));
+      };
+    }));
 
     pkgsDir = builtins.readDir ./pkgs;
     dirs = builtins.filter (
