@@ -27,7 +27,7 @@ stdenvNoCC.mkDerivation rec {
       Source: https://www.gnome-look.org/p/2303818
     '';
     homepage = "https://www.gnome-look.org/p/2303818";
-    license = licenses.unfreeRedistributable; 
+    license = licenses.free;
     platforms = platforms.linux;
     maintainers = [ ];
   };
