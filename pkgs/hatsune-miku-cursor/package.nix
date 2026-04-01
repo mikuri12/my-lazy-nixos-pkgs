@@ -6,7 +6,7 @@ stdenvNoCC.mkDerivation rec {
 
   src = fetchzip {
   url = "https://github.com/mikuri12/my-lazy-nixos-pkgs/releases/download/cursores/Hatsune-Miku.tar.gz";
-  hash = "sha256-4ETpzZn8oQ/Y7SC5ngNdQ2ZU3sgLTHFAe585Yf6ySOs=";
+  hash = "sha256-CDkVpQU8oFmo3S0HYMmByvJ9SgRBiPo+2p6VrX473lI=";
   stripRoot = false;
   };
 
