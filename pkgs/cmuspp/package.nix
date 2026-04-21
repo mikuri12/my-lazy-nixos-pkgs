@@ -33,6 +33,7 @@ stdenv.mkDerivation rec {
     runHook preInstall
     install -Dm755 cmuspp $out/bin/cmuspp
     if [ -d themes ]; then
+      mkdir -p $out/share/cmuspp
       cp -r themes $out/share/cmuspp/themes
     fi
     runHook postInstall
