@@ -21,7 +21,8 @@
         allowUnfreePredicate = pkg: builtins.elem (pkg.pname or "") [
           "spotiflac"
           "easytether"
-          "helium"
+          "helium" 
+          "eden"
         ];
         permittedInsecurePackages = [
           "openssl-1.1.1w"
