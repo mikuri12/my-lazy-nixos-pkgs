@@ -6,7 +6,7 @@
 }:
 buildGoModule rec {
   pname = "meowfetch";
-  version = "1.0.1-unstable-2022-09-18";
+  version = "1.0.1";
 
   src = fetchFromGitHub {
     owner = "faynopi";
