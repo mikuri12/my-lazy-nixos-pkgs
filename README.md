@@ -145,11 +145,13 @@ Most packages update automatically through GitHub Actions:
 - `.github/workflows/update.yml` runs weekly. It uses `nix-update` on the
   packages whose versions can be discovered from GitHub (`cmuspp`,
   `meowfetch`, `helium`, `spotiflac`) and opens a pull request with the bumps.
-- `.github/workflows/update-eden-nightly.yml` runs daily. Eden's nightly URL
-  changes on every build, so `nix-update` cannot follow it. Instead the script
-  `scripts/update-eden-nightly.sh` reads the latest release from Eden's Forgejo
-  API (`git.eden-emu.dev`), rebuilds the download URL and refreshes the hash,
-  then opens a pull request.
+- `.github/workflows/update-rolling.yml` runs daily for the rolling sources
+  whose host only serves the latest version (`eden-emu-nightly` and `hayase`).
+  Eden's nightly URL changes on every build, and Hayase's download host drops
+  old versions, so `nix-update` cannot follow them. The scripts
+  `scripts/update-eden-nightly.sh` and `scripts/update-hayase.sh` read the
+  latest version, rebuild the download URL and refresh the hash, then open a
+  pull request.
 
 For the pull requests to be created, the repository must allow GitHub Actions
 to open them: Settings -> Actions -> General -> Workflow permissions ->
@@ -162,7 +164,7 @@ You can also run the nightly updater locally:
 bash scripts/update-eden-nightly.sh
 ```
 
-The remaining packages (`eden-emu` stable, `hayase`, `easytether`,
+The remaining packages (`eden-emu` stable, `easytether`,
 `hatsune-miku-cursor`) use their own hosting and are updated by hand.
 
 ## Binary cache
@@ -218,7 +220,7 @@ lib/appimage-extras.nix         Shared helper: installs icons and .desktop
                                 entries from extracted AppImages
 modules/easytether.nix          NixOS service module for EasyTether
 pkgs/<name>/package.nix         One directory per package
-scripts/update-eden-nightly.sh  Updater for the Eden nightly build
+scripts/                        Updaters for rolling sources (eden-nightly, hayase)
 .github/workflows/              Auto-update and build-and-cache workflows
 ```
 

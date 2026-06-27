@@ -1,4 +1,4 @@
-name: update-eden-nightly
+name: update-rolling
 
 on:
   schedule:
@@ -18,10 +18,14 @@ jobs:
       - uses: DeterminateSystems/nix-installer-action@main
       - uses: DeterminateSystems/magic-nix-cache-action@main
 
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
       - name: Bump eden-nightly
-        run: |
-          sudo apt-get update && sudo apt-get install -y jq
-          bash scripts/update-eden-nightly.sh
+        run: bash scripts/update-eden-nightly.sh
+
+      - name: Bump hayase
+        run: bash scripts/update-hayase.sh
 
       - name: Format with alejandra
         run: nix run nixpkgs#alejandra -- -q .
@@ -29,11 +33,11 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v6
         with:
-          branch: auto/update-eden-nightly
+          branch: auto/update-rolling
           delete-branch: true
-          title: "chore: actualizar eden-nightly"
-          commit-message: "chore: bump eden-nightly (último build)"
+          title: "chore: actualizar paquetes rolling (eden-nightly, hayase)"
+          commit-message: "chore: bump rolling (eden-nightly, hayase)"
           body: |
-            Bump automático de `eden-emu-nightly` al último nightly de
-            git.eden-emu.dev. Revisa y mergea si el build pasa.
+            Bump automático de las fuentes rolling (solo-última versión):
+            eden-emu-nightly y hayase. Revisa y mergea si los builds pasan.
           labels: automated, dependencies
