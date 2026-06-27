@@ -1,36 +1,51 @@
 {
   lib,
-  stdenv,
+  stdenvNoCC,
+  appimageTools,
   fetchurl,
-}:
-stdenv.mkDerivation rec {
+  dwarfs,
+}: let
   pname = "eden-nightly";
-  version = "7e84f9ef59";
+  timestamp = "1782587193";
+  version = "0c2894eabf";
+  hash = "sha256-TItDL6FBJi2fbNjzt2kZCf/EXXnr1EAQONLMZ9IM+8E=";
 
   src = fetchurl {
-    url = "https://nightly.eden-emu.dev/v1778614183.${version}/Eden-Linux-${version}-amd64-clang-pgo.AppImage";
-    hash = "sha256-WPPxXMuzhYx1Ira4i/9kE6c7nQcZvJRRhUahDXQK/3w=";
+    url = "https://nightly.eden-emu.dev/v${timestamp}.${version}/Eden-Linux-${version}-amd64-clang-pgo.AppImage";
+    inherit hash;
   };
 
-  dontUnpack = true;
-  dontBuild = true;
-  dontStrip = true;
-  dontPatchELF = true;
-
-  installPhase = ''
-    runHook preInstall
-    mkdir -p $out/bin
-    cp $src $out/bin/eden-nightly
-    chmod +x $out/bin/eden-nightly
-    runHook postInstall
-  '';
-
-  meta = {
-    description = "Nintendo Switch emulator forked from yuzu (nightly PGO build)";
-    homepage = "https://eden-emu.dev";
-    license = lib.licenses.gpl3Plus;
-    mainProgram = "eden-nightly";
-    platforms = [ "x86_64-linux" ];
-    sourceProvenance = [ lib.sourceTypes.binaryNativeCode ];
+  extracted = stdenvNoCC.mkDerivation {
+    name = "${pname}-${version}-extracted";
+    inherit src;
+    nativeBuildInputs = [dwarfs];
+    dontUnpack = true;
+    buildPhase = ''
+      runHook preBuild
+      mkdir -p $out
+      dwarfsextract --input "$src" --image-offset auto --output "$out"
+      runHook postBuild
+    '';
   };
-}
+in
+  appimageTools.wrapAppImage {
+    inherit pname version;
+    src = extracted;
+
+    extraPkgs = pkgs: with pkgs; [libGL vulkan-loader];
+
+    extraInstallCommands = import ../../lib/appimage-extras.nix {
+      inherit pname;
+      contents = extracted;
+      aliases = ["eden"];
+    };
+
+    meta = {
+      description = "Nintendo Switch emulator forked from yuzu (nightly PGO build)";
+      homepage = "https://eden-emu.dev";
+      license = lib.licenses.gpl3Plus;
+      mainProgram = "eden-nightly";
+      platforms = ["x86_64-linux"];
+      sourceProvenance = [lib.sourceTypes.binaryNativeCode];
+    };
+  }

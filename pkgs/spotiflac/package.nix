@@ -6,9 +6,7 @@
   ffmpeg,
   glib-networking,
   gst_all_1,
-}:
-
-let
+}: let
   pname = "spotiflac";
   version = "7.1.3";
   src = fetchurl {
@@ -16,7 +14,7 @@ let
     hash = "sha256-3IjUblz61MuternDg2oqfkrs/gSlq0I9oqmE0oZGrsM=";
   };
 
-  appimageContents = appimageTools.extractType2 { inherit pname version src; };
+  appimageContents = appimageTools.extractType2 {inherit pname version src;};
 
   runtimeLibs = [
     webkitgtk_4_1
@@ -28,34 +26,37 @@ let
     gst-plugins-base
     gst-plugins-good
   ];
-
 in
-appimageTools.wrapType2 {
-  inherit pname version src;
+  appimageTools.wrapType2 {
+    inherit pname version src;
 
-  extraInstallCommands = ''
-  install -Dm644 ${appimageContents}/spotiflac.png \
-    $out/share/icons/hicolor/256x256/apps/spotiflac.png
+    extraInstallCommands = ''
+      install -Dm644 ${appimageContents}/spotiflac.png \
+        $out/share/icons/hicolor/256x256/apps/spotiflac.png
 
-  install -Dm644 ${appimageContents}/spotiflac.desktop \
-    $out/share/applications/spotiflac.desktop
+      install -Dm644 ${appimageContents}/spotiflac.desktop \
+        $out/share/applications/spotiflac.desktop
 
-  substituteInPlace $out/share/applications/spotiflac.desktop \
-    --replace-fail 'Exec=SpotiFLAC' 'Exec=spotiflac'
-'';
+      substituteInPlace $out/share/applications/spotiflac.desktop \
+        --replace-fail 'Exec=SpotiFLAC' 'Exec=spotiflac'
+    '';
 
-  extraPkgs = pkgs: runtimeLibs ++ gstPlugins;
+    extraPkgs = pkgs: runtimeLibs ++ gstPlugins;
 
-  extraBwrapArgs = [
-    "--setenv" "GIO_EXTRA_MODULES" "${glib-networking}/lib/gio/modules"
-    "--setenv" "GST_PLUGIN_PATH" (lib.makeSearchPathOutput "lib" "lib/gstreamer-1.0" gstPlugins)
-  ];
+    extraBwrapArgs = [
+      "--setenv"
+      "GIO_EXTRA_MODULES"
+      "${glib-networking}/lib/gio/modules"
+      "--setenv"
+      "GST_PLUGIN_PATH"
+      (lib.makeSearchPathOutput "lib" "lib/gstreamer-1.0" gstPlugins)
+    ];
 
-  meta = {
-    description = "Download Spotify tracks in FLAC format";
-    homepage = "https://github.com/afkarxyz/SpotiFLAC";
-    mainProgram = "spotiflac";
-    platforms = [ "x86_64-linux" ];
-    license = lib.licenses.unfree;
-  };
-}
+    meta = {
+      description = "Download Spotify tracks in FLAC format";
+      homepage = "https://github.com/afkarxyz/SpotiFLAC";
+      mainProgram = "spotiflac";
+      platforms = ["x86_64-linux"];
+      license = lib.licenses.unfree;
+    };
+  }

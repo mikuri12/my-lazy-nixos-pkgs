@@ -4,10 +4,9 @@
   fetchFromGitHub,
   installShellFiles,
 }:
-
 buildGoModule rec {
   pname = "meowfetch";
-  version = "1.0.1-unstable";
+  version = "1.0.1-unstable-2022-09-18";
 
   src = fetchFromGitHub {
     owner = "faynopi";
@@ -28,11 +27,9 @@ buildGoModule rec {
   nativeBuildInputs = [installShellFiles];
 
   postInstall = ''
-    # Install man page
     mkdir -p $out/share/man/man1
     sed "s/{VERSION}/${version}/g" < meowfetch.1 > $out/share/man/man1/meowfetch.1
 
-    # Install default config
     mkdir -p $out/share/meowfetch
     cp configs/meow.conf $out/share/meowfetch/meow.conf
   '';

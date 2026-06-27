@@ -1,0 +1,48 @@
+name: update-packages
+
+on:
+  schedule:
+    - cron: "17 6 * * 1"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: DeterminateSystems/nix-installer-action@main
+      - uses: DeterminateSystems/magic-nix-cache-action@main
+
+      - name: Run nix-update for each package
+        run: |
+          set -uo pipefail
+          for pkg in cmuspp meowfetch helium spotiflac; do
+            echo "::group::nix-update $pkg"
+            nix run nixpkgs#nix-update -- \
+              --flake \
+              --version=stable \
+              "$pkg" || echo "nix-update falló para $pkg (se ignora)"
+            echo "::endgroup::"
+          done
+
+      - name: Format with alejandra
+        run: nix run nixpkgs#alejandra -- -q .
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: auto/update-packages
+          delete-branch: true
+          title: "chore: actualización automática de paquetes"
+          commit-message: "chore: bump de versiones/hashes (nix-update)"
+          body: |
+            Bumps automáticos vía `nix-update` (cron semanal).
+
+            Paquetes cubiertos: cmuspp, meowfetch, helium, spotiflac.
+            Revisa el diff y mergea si los builds pasan.
+          labels: automated, dependencies
