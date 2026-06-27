@@ -30,6 +30,24 @@ jobs:
             echo "::endgroup::"
           done
 
+      - name: Fix stale hashes after version bump
+        run: |
+          set -uo pipefail
+          for pkg in cmuspp meowfetch helium spotiflac; do
+            for attempt in 1 2 3; do
+              out=$(nix build ".#$pkg" --accept-flake-config 2>&1) && break
+              got=$(printf '%s\n' "$out" | grep -oE 'got:[[:space:]]*sha256-[A-Za-z0-9+/=]+' | head -1 | grep -oE 'sha256-[A-Za-z0-9+/=]+')
+              bad=$(printf '%s\n' "$out" | grep -oE 'specified:[[:space:]]*sha256-[A-Za-z0-9+/=]+' | head -1 | grep -oE 'sha256-[A-Za-z0-9+/=]+')
+              if [ -n "$got" ] && [ -n "$bad" ] && [ "$got" != "$bad" ]; then
+                echo "Fix $pkg: $bad -> $got"
+                sed -i "s#$bad#$got#g" "pkgs/$pkg/package.nix"
+              else
+                printf '%s\n' "$out" | tail -20
+                break
+              fi
+            done
+          done
+
       - name: Format with alejandra
         run: nix run nixpkgs#alejandra -- -q .
 
