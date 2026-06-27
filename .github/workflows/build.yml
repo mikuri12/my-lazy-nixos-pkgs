@@ -21,10 +21,11 @@ jobs:
       - name: Build all packages
         run: |
           set -euo pipefail
-          pkgs=$(nix flake show --json 2>/dev/null \
-            | nix run nixpkgs#jq -- -r '.packages."x86_64-linux" | keys[]')
+          pkgs=$(nix eval --raw --accept-flake-config \
+            '.#packages.x86_64-linux' \
+            --apply 'p: builtins.concatStringsSep " " (builtins.attrNames p)')
           for pkg in $pkgs; do
             echo "::group::build $pkg"
-            nix build ".#$pkg" --print-build-logs
+            nix build ".#$pkg" --accept-flake-config --print-build-logs
             echo "::endgroup::"
           done
