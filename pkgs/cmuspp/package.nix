@@ -10,7 +10,7 @@
 }:
 stdenv.mkDerivation rec {
   pname = "cmuspp";
-  version = "0-unstable-2026-04-19";
+  version = "1.1.1";
 
   src = fetchFromGitHub {
     owner = "Ars-byte";
