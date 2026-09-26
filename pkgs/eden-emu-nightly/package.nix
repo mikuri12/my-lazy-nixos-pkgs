@@ -6,9 +6,9 @@
   dwarfs,
 }: let
   pname = "eden-nightly";
-  timestamp = "1786387434";
-  version = "8648c27cbb";
-  hash = "sha256-xparIulp51TMJ4Xd/sVVvxrluH/BPK/ZOWsyb2tdiNY=";
+  timestamp = "1790369717";
+  version = "bebc19da32";
+  hash = "sha256-Ssf50I6ujqlI1dCpjhUTUk3LNPrva1xT1d7Ffqr0Ov8=";
 
   src = fetchurl {
     url = "https://nightly.eden-emu.dev/v${timestamp}.${version}/Eden-Linux-${version}-amd64-clang-pgo.AppImage";
